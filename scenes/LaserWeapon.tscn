@@ -1,0 +1,58 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://scripts/Laser.cs" type="Script" id=1]
+[ext_resource path="res://scenes/BlueLaser.tscn" type="PackedScene" id=2]
+[ext_resource path="res://sprites/player/arm_purple.png" type="Texture" id=3]
+[ext_resource path="res://scenes/GreenLaser.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/PurpleLaser.tscn" type="PackedScene" id=5]
+[ext_resource path="res://scenes/RedLaser.tscn" type="PackedScene" id=6]
+[ext_resource path="res://sprites/player/arm_green.png" type="Texture" id=7]
+[ext_resource path="res://sprites/player/arm_red.png" type="Texture" id=8]
+[ext_resource path="res://sprites/player/arm_blue.png" type="Texture" id=9]
+
+[node name="LaserWeapon" type="RayCast2D"]
+cast_to = Vector2( 150, 0 )
+script = ExtResource( 1 )
+laserWidth = 3.0
+
+[node name="BlueLaser" parent="." instance=ExtResource( 2 )]
+modulate = Color( 1, 1, 1.25, 1 )
+points = PoolVector2Array( 0, 0, 0, 0 )
+width = 0.0
+default_color = Color( 0.462745, 0.682353, 1, 1 )
+
+[node name="GreenLaser" parent="." instance=ExtResource( 4 )]
+visible = false
+modulate = Color( 1, 1.25, 1, 1 )
+width = 0.0
+
+[node name="PurpleLaser" parent="." instance=ExtResource( 5 )]
+visible = false
+modulate = Color( 1.25, 1, 1.25, 1 )
+width = 0.0
+
+[node name="RedLaser" parent="." instance=ExtResource( 6 )]
+visible = false
+modulate = Color( 1.25, 1, 1, 1 )
+width = 0.0
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="BlueArm" type="Sprite" parent="."]
+position = Vector2( 5, 0.4 )
+texture = ExtResource( 9 )
+
+[node name="GreenArm" type="Sprite" parent="."]
+visible = false
+position = Vector2( 5, 0.4 )
+texture = ExtResource( 7 )
+
+[node name="PurpleArm" type="Sprite" parent="."]
+visible = false
+position = Vector2( 5, 0.4 )
+texture = ExtResource( 3 )
+
+[node name="RedArm" type="Sprite" parent="."]
+visible = false
+position = Vector2( 5, 0.4 )
+texture = ExtResource( 8 )

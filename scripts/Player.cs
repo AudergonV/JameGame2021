@@ -23,187 +23,16 @@ public class Player : KinematicBody2D
 
     private Vector2 velocity = new Vector2(0,0);
     private Vector2 floorDirection = new Vector2(0,-1);
-    private int bulletType = 1;
 
-    private Sprite weapon;
-    private PackedScene BlueBullet;    
-    private PackedScene GreenBullet;
-    private PackedScene PurpleBullet;
-    private PackedScene RedBullet;
+    //private Weapon weapon;
+    private Laser weapon;
     private PackedScene JumpParticles;
     private TileMap platforms;
 
-    #region old
-    /*public override void _Ready()
-    {
-        JumpParticles = ResourceLoader.Load<PackedScene>("res://scenes/JumpParticles.tscn");
-        Bullet = ResourceLoader.Load<PackedScene>("res://scenes/Bullet.tscn");
-        weapon = GetNode<Sprite>("Weapon");
-    }
-
-
-    public override void _PhysicsProcess(float delta)
-    {
-
-        GD.Print(energy + "      " +  actualJumpForce);
-        if (Input.IsActionPressed("left")){
-            velocity.x = -actualSpeed;
-        }
-        if (Input.IsActionPressed("right")){
-            velocity.x = actualSpeed;
-        }
-        if (Input.IsActionPressed("fire")){
-            shoot();
-        }
-        if (Input.IsActionJustPressed("secondary")){
-            changeWeapon();
-        }
-        Vector2 mousePos = GetGlobalMousePosition();
-        weapon.Rotation = Position.AngleToPoint(mousePos)-Mathf.Pi;
-        if (Input.IsActionPressed("jump")){
-            jump();
-        }
-        
-
-        if (GetSlideCount() == 0){
-            grounded = false;
-        }else{
-            for (int i = 0; i < GetSlideCount(); i++){
-                KinematicCollision2D collision = GetSlideCollision(i);
-                checkCollision(collision, delta);
-            }
-        } 
-
-        if (!grounded){
-            if (gravity > 0 && velocity.y > 0){
-                energy+=velocity.y*delta;
-            }else if (gravity < 0 && velocity.y < 0){
-                energy-=velocity.y*delta;
-            }else{
-                energy = 0;
-            }
-        }else{
-            energy = 0;
-        }
-        /*if (velocity.y > 0 && !grounded){
-            energy+=velocity.y*delta;
-        }else{
-            energy = 0;
-        }*//*
-        MoveAndSlide(velocity, Vector2.Zero,false, 4, (float)Math.PI/4, false);
-        velocity.x = Lerp(velocity.x, 0, 0.3f);
-        if (!grounded) {
-            velocity.y = velocity.y + gravity*gravityScale;
-        }
-
-    }
-
-    private void jump(){
-        if (grounded){
-            Particles2D particles = (Particles2D)JumpParticles.Instance();
-            particles.GlobalPosition = Position; 
-            GetParent().AddChild(particles);
-            velocity.y = -actualJumpForce*jumpForce*gravity;
-            grounded = false;
-            if (onGravityCell){
-                gravity = -gravity;
-            }
-        }
-    }
-
-    private void changeWeapon(){
-        if (bulletType+1 > 4) bulletType = 1;
-        else bulletType++;
-    }
-
-    private void shoot(){
-        Bullet bullet = (Bullet) Bullet.Instance();
-        bullet.Transform = weapon.Transform;
-        bullet.fire(GlobalPosition, new Vector2((float)Math.Cos(weapon.Rotation), (float)Math.Sin(weapon.Rotation)), bulletType);
-        GetParent().AddChild(bullet);
-    }
-
-    private void checkCollision(KinematicCollision2D collision, float delta){
-        if (collision != null){
-            if (collision.Collider is TileMap){
-                TileMap tmap = (TileMap) collision.Collider;
-                Vector2 pos = tmap.WorldToMap(Position);
-                int id = tmap.GetCellv(pos-collision.Normal);
-                if (collision.Normal.x == 0 && collision.Normal.y == -1){ // En dessous des pieds
-                    checkTile(id, delta, false);
-                    if (gravity > 0){
-                        grounded = true;
-                    } else {
-                        velocity.y = 0;
-                    }
-                } else if (collision.Normal.x == 0 && collision.Normal.y == 1){ // Au plafond
-                    checkTile(id, delta, true);
-                    if (gravity > 0){
-                        velocity.y = 0;
-                    }else{
-                        grounded = true;
-                    }
-                } else { // On frotte un mur
-                    velocity.x = 0;
-                }
-            }else if (collision.Collider is PhysicsBody2D && ((PhysicsBody2D) collision.Collider).IsInGroup("death_body")){
-                GD.Print("MOORT");
-            }
-        }       
-    }
-
-    private void checkTile(int id, float delta, bool onTop){
-        if (id >= 6 && id <= 11) {
-            speedCell();
-        }else if (id >= 12 && id <= 17) {
-            jumpCell(delta);                        
-        }else if (id >= 18 && id <= 23) {
-            stickyCell(onTop);                        
-        }else if (id < 6) {
-            neutralCell();
-        }
-    }
-
-    private void neutralCell(){
-        actualSpeed = Lerp(actualSpeed, speed*minSpeed, 0.2f);
-        actualJumpForce = jumpForce*minJumpForce;
-        onGravityCell = false;
-    }
-
-    private void speedCell(){
-        onGravityCell = false;
-        actualJumpForce = jumpForce*minJumpForce;
-        if (Input.IsActionPressed("left") || Input.IsActionPressed("right")){
-            actualSpeed = Lerp(actualSpeed, speed*maxSpeed, 0.02f);
-        }else{
-            actualSpeed = speed*minSpeed;
-        }
-    }
-
-    private void jumpCell(float delta){
-        onGravityCell = false;
-        actualJumpForce=Lerp(actualJumpForce, maxJumpForce, energy/200+Math.Abs(velocity.x)/20*delta);
-        jump();
-    }
-
-    private void stickyCell(bool onTop){
-        actualJumpForce = jumpForce*minJumpForce;
-        onGravityCell = true;
-    }
-
-    float Lerp(float firstFloat, float secondFloat, float by)
-    {
-        return firstFloat * (1 - by) + secondFloat * by;
-    }*/
-    #endregion
     public override void _Ready()
     {
         JumpParticles = ResourceLoader.Load<PackedScene>("res://scenes/JumpParticles.tscn");
-        BlueBullet = ResourceLoader.Load<PackedScene>("res://scenes/BlueBullet.tscn");
-        GreenBullet = ResourceLoader.Load<PackedScene>("res://scenes/GreenBullet.tscn");
-        PurpleBullet = ResourceLoader.Load<PackedScene>("res://scenes/PurpleBullet.tscn");
-        RedBullet = ResourceLoader.Load<PackedScene>("res://scenes/RedBullet.tscn");
-        weapon = GetNode<Sprite>("Weapon");
+        weapon = GetNode<Laser>("Weapon");
         platforms = GetParent().GetNode<TileMap>("Platforms");
         //Temp
         actualSpeed = minSpeed;
@@ -222,10 +51,12 @@ public class Player : KinematicBody2D
             velocity.x = actualSpeed;
         }
         if (Input.IsActionPressed("fire")){
-            shoot();
+            weapon.toggleCasting(true);
+        }else{
+            weapon.toggleCasting(false);
         }
         if (Input.IsActionJustPressed("secondary")){
-            changeWeapon();
+            weapon.changeWeapon();
         }
         if (Input.IsActionJustPressed("down")){
             if (gravity > 0) sticky = false;
@@ -345,29 +176,5 @@ public class Player : KinematicBody2D
         return firstFloat * (1 - by) + secondFloat * by;
     }
 
-    private void changeWeapon(){
-        if (bulletType+1 > 4) bulletType = 1;
-        else bulletType++;
-    }
 
-    private void shoot(){
-        Bullet bullet;
-        switch (bulletType){
-            case 1:
-                bullet = (Bullet) BlueBullet.Instance();
-            break;
-            case 2:
-                bullet = (Bullet) GreenBullet.Instance();
-            break;
-            case 3:
-                bullet = (Bullet) PurpleBullet.Instance();
-            break;
-            default:
-                bullet = (Bullet) RedBullet.Instance();
-            break;
-        }
-        bullet.Transform = weapon.Transform;
-        bullet.fire(GlobalPosition, new Vector2((float)Math.Cos(weapon.Rotation), (float)Math.Sin(weapon.Rotation)), bulletType);
-        GetParent().AddChild(bullet);
-    }
 }

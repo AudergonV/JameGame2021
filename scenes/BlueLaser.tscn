@@ -1,0 +1,10 @@
+[gd_scene format=2]
+
+[node name="Line2D" type="Line2D"]
+modulate = Color( 1, 1, 1.4, 1 )
+points = PoolVector2Array( 0, 0, 100, 0 )
+width = 1.5
+default_color = Color( 0.709804, 0.858824, 1, 1 )
+joint_mode = 2
+end_cap_mode = 2
+antialiased = true
