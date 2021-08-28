@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://tilesets/CaveTileSet.tres" type="TileSet" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://scenes/ParallaxBackground.tscn" type="PackedScene" id=5]
 [ext_resource path="res://scenes/OutOfZone.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/Teleporter.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/Stand.tscn" type="PackedScene" id=8]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -27,9 +28,9 @@ respawnPoint = Vector2( -32, -16 )
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2( 72, -34 )
 current = true
-zoom = Vector2( 0.68, 0.68 )
+zoom = Vector2( 0.6, 0.6 )
 limit_top = -250
-limit_bottom = 150
+limit_bottom = 100
 drag_margin_h_enabled = true
 smoothing_speed = 2.0
 drag_margin_left = 0.4
@@ -98,6 +99,9 @@ respawnPoint = Vector2( -32, -16 )
 position = Vector2( 1673.27, -144 )
 teleportTo = 3
 
-[connection signal="StatusChanged" from="Button" to="HorizontalLaser3" method="toggleLaser"]
-[connection signal="StatusChanged" from="Button" to="HorizontalLaser2" method="toggleLaser"]
+[node name="Stand" parent="." instance=ExtResource( 8 )]
+position = Vector2( 136, -16 )
+
 [connection signal="StatusChanged" from="Button" to="HorizontalLaser" method="toggleLaser"]
+[connection signal="StatusChanged" from="Button" to="HorizontalLaser2" method="toggleLaser"]
+[connection signal="StatusChanged" from="Button" to="HorizontalLaser3" method="toggleLaser"]

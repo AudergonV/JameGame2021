@@ -11,12 +11,8 @@ config_version=4
 [application]
 
 config/name="JameGam2021"
-run/main_scene="res://scenes/levels/Level1.tscn"
+run/main_scene="res://scenes/Global.tscn"
 config/icon="res://icon.png"
-
-[autoload]
-
-Global="*res://scenes/Global.tscn"
 
 [display]
 

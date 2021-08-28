@@ -6,10 +6,11 @@ public class Teleporter : StaticBody2D
     
     [Export]
     public int teleportTo = 1;
+    private Global global;
 
     public override void _Ready()
     {
-        
+        global = GetNode<Global>("/root/Global");
     }
 
     public void OnBodyEntered(Node2D body){
@@ -19,7 +20,7 @@ public class Teleporter : StaticBody2D
     }
 
     private void teleport(){
-        GetTree().ChangeScene("res://scenes/levels/Level"+teleportTo+".tscn");
+        global.sceneLoader.CallDeferred("loadLevel",teleportTo);
     }
 
 }

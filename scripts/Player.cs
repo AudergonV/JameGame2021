@@ -29,12 +29,15 @@ public class Player : KinematicBody2D
     private Vector2 floorDirection = new Vector2(0,-1);
 
     //private Weapon weapon;
-    private Laser weapon;
+    public Laser weapon;
     private PackedScene JumpParticles;
     private TileMap platforms;
     private AnimatedSprite animatedSprite;
     private AudioStreamPlayer2D audio;
     private PackedScene DeathParticles;
+
+    [Export]
+    public Texture pointer;
     public override void _Ready()
     {
         JumpParticles = ResourceLoader.Load<PackedScene>("res://scenes/JumpParticles.tscn");
@@ -46,12 +49,13 @@ public class Player : KinematicBody2D
         //Temp
         actualSpeed = minSpeed;
         actualJumpForce = minJumpForce;
+        Input.SetCustomMouseCursor(pointer, Input.CursorShape.Arrow, new Vector2(16,16));
     }
 
     public override void _PhysicsProcess(float delta)
     {
         Vector2 mousePos = GetGlobalMousePosition();
-        weapon.Rotation = Position.AngleToPoint(mousePos)-Mathf.Pi;
+        weapon.Rotation = weapon.GlobalPosition.AngleToPoint(mousePos)-Mathf.Pi;
         running = false;
         if (Input.IsActionPressed("left")){
             velocity.x = -actualSpeed;

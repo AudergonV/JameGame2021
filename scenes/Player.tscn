@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=2]
+[gd_scene load_steps=42 format=2]
 
 [ext_resource path="res://sprites/player/idle/idle3.png" type="Texture" id=1]
 [ext_resource path="res://scenes/LaserWeapon.tscn" type="PackedScene" id=2]
@@ -38,37 +38,18 @@
 [ext_resource path="res://sprites/player/idle/idle_left3.png" type="Texture" id=36]
 [ext_resource path="res://sounds/death.wav" type="AudioStream" id=37]
 [ext_resource path="res://shaders/Flash.tres" type="Material" id=38]
+[ext_resource path="res://sprites/UI/Crossair.png" type="Texture" id=39]
 
-[sub_resource type="SpriteFrames" id=2]
+[sub_resource type="SpriteFrames" id=1]
 animations = [ {
 "frames": [ ExtResource( 26 ), ExtResource( 25 ), ExtResource( 27 ) ],
 "loop": true,
 "name": "Jumping",
 "speed": 5.0
 }, {
-"frames": [ ExtResource( 5 ), ExtResource( 4 ), ExtResource( 1 ) ],
-"loop": true,
-"name": "Idle",
-"speed": 3.0
-}, {
-"frames": [ ExtResource( 10 ), ExtResource( 6 ), ExtResource( 11 ), ExtResource( 8 ), ExtResource( 7 ), ExtResource( 12 ), ExtResource( 13 ), ExtResource( 9 ) ],
-"loop": true,
-"name": "Running",
-"speed": 10.0
-}, {
 "frames": [ ExtResource( 30 ), ExtResource( 29 ), ExtResource( 31 ) ],
 "loop": true,
 "name": "FallingLeft",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 33 ), ExtResource( 28 ), ExtResource( 32 ) ],
-"loop": true,
-"name": "JumpingLeft",
-"speed": 5.0
-}, {
-"frames": [ ExtResource( 23 ), ExtResource( 24 ), ExtResource( 22 ) ],
-"loop": true,
-"name": "Falling",
 "speed": 5.0
 }, {
 "frames": [ ExtResource( 16 ), ExtResource( 17 ), ExtResource( 19 ), ExtResource( 20 ), ExtResource( 18 ), ExtResource( 21 ), ExtResource( 15 ), ExtResource( 14 ) ],
@@ -76,13 +57,33 @@ animations = [ {
 "name": "RunningLeft",
 "speed": 10.0
 }, {
+"frames": [ ExtResource( 23 ), ExtResource( 24 ), ExtResource( 22 ) ],
+"loop": true,
+"name": "Falling",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 10 ), ExtResource( 6 ), ExtResource( 11 ), ExtResource( 8 ), ExtResource( 7 ), ExtResource( 12 ), ExtResource( 13 ), ExtResource( 9 ) ],
+"loop": true,
+"name": "Running",
+"speed": 10.0
+}, {
+"frames": [ ExtResource( 33 ), ExtResource( 28 ), ExtResource( 32 ) ],
+"loop": true,
+"name": "JumpingLeft",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 5 ), ExtResource( 4 ), ExtResource( 1 ) ],
+"loop": true,
+"name": "Idle",
+"speed": 3.0
+}, {
 "frames": [ ExtResource( 34 ), ExtResource( 35 ), ExtResource( 36 ) ],
 "loop": true,
 "name": "IdleLeft",
 "speed": 5.0
 } ]
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 5.46912, 15.062 )
 
 [node name="Player" type="KinematicBody2D" groups=[
@@ -91,16 +92,18 @@ extents = Vector2( 5.46912, 15.062 )
 position = Vector2( 334.976, -761.121 )
 script = ExtResource( 3 )
 speed = 2.0
+pointer = ExtResource( 39 )
 
 [node name="Sprite" type="AnimatedSprite" parent="."]
 material = ExtResource( 38 )
 position = Vector2( -0.530945, -0.969666 )
-frames = SubResource( 2 )
+frames = SubResource( 1 )
 animation = "IdleLeft"
+frame = 2
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
+shape = SubResource( 2 )
 
 [node name="Weapon" parent="." instance=ExtResource( 2 )]
 position = Vector2( -3.7081, -5.36359 )

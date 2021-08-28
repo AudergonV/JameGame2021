@@ -37,6 +37,8 @@ public class Laser : RayCast2D
 
     [Export]
     public float laserWidth = 1.5f;
+    [Export]
+    public float length = 300f;
 
     private TileMap tmap_platforms;
     private AudioStreamPlayer2D audio;
@@ -44,16 +46,22 @@ public class Laser : RayCast2D
     private bool hflipped = false;
     private bool vflipped = false;
 
+
+    private Global global;
+
     public override void _Ready()
     {
         SetPhysicsProcess(false);
         audio = GetNode<AudioStreamPlayer2D>("Audio");
+
+        global = GetNode<Global>("/root/Global");
 
         blueLaser = GetNode<Line2D>("BlueLaser");
         greenLaser = GetNode<Line2D>("GreenLaser");
         purpleLaser = GetNode<Line2D>("PurpleLaser");
         redLaser = GetNode<Line2D>("RedLaser");
         currentLaser = blueLaser;
+
 
         blueArm = GetNode<Sprite>("BlueArm");
         greenArm = GetNode<Sprite>("GreenArm");
@@ -73,7 +81,7 @@ public class Laser : RayCast2D
         materials[3] = redMaterial;
 
         tween = GetNode<Tween>("Tween");
-        tmap_platforms = GetTree().GetRoot().GetNode<Node2D>("Node2D").GetNode<TileMap>("Platforms");
+        tmap_platforms = global.GetNode<Node2D>("SceneLoader").GetNode<Node2D>("Node2D").GetNode<TileMap>("Platforms");
     }
 
     
@@ -90,22 +98,25 @@ public class Laser : RayCast2D
     }
 
     public void toggleCasting(bool casting){
-        if (casting != isCasting){        
-            isCasting = !isCasting;
-            if (isCasting){
-                appear();
-            }else{
-                disappear();
-            }
+        if (global.isWeaponUnlocked()){
+            if (casting != isCasting){        
+                isCasting = !isCasting;
+                if (isCasting){
+                    appear();
+                }else{
+                    disappear();
+                }
 
+            }
+            SetPhysicsProcess(isCasting);
         }
-        SetPhysicsProcess(isCasting);
     }
 
     public override void _PhysicsProcess(float delta)
     {
         Vector2 cast_point = CastTo;
         ForceRaycastUpdate();
+        
 
         if (IsColliding()){
             cast_point = ToLocal(GetCollisionPoint());
@@ -121,12 +132,12 @@ public class Laser : RayCast2D
                     #region particles
                     Particles2D particles = (Particles2D)Particles.Instance();
                     if (nor.y > 0) particles.Rotation = (float)Math.PI;
-                    particles.SetProcessMaterial(materials[bulletType-1]);
+                    particles.ProcessMaterial = (materials[bulletType-1]);
                     particles.GlobalPosition = GetCollisionPoint(); 
-                    GetTree().GetRoot().AddChild(particles);
+                    GetTree().Root.AddChild(particles);
                     AudioStreamPlayer2D audio = (AudioStreamPlayer2D) SplatSound.Instance();
                     audio.GlobalPosition = GetCollisionPoint(); 
-                    GetTree().GetRoot().AddChild(audio);
+                    GetTree().Root.AddChild(audio);
                     #endregion
                 }
             }
@@ -135,7 +146,6 @@ public class Laser : RayCast2D
         greenLaser.SetPointPosition(1, cast_point);
         purpleLaser.SetPointPosition(1, cast_point);
         redLaser.SetPointPosition(1, cast_point);
-
     }
 
     private void appear(){
@@ -160,9 +170,16 @@ public class Laser : RayCast2D
         audio.Stop();
     }
 
-    public void changeWeapon(){
-        if (bulletType+1 > 4) bulletType = 1;
-        else bulletType++;
+    public void changeWeapon(int id = -1){
+        if (id < 1){
+            do{
+                bulletType++; 
+                if (bulletType > 4) bulletType = 1;
+            }while(!global.isWeaponEnabled(bulletType));
+        } else {
+            if (global.isWeaponEnabled(id)) bulletType = id;
+        }
+        global.ui.setWeapon(bulletType);
         currentLaser.Hide();
         currentArm.Hide();
         switch (bulletType){
