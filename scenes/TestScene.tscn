@@ -1,32 +1,41 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://sprites/env/Spike.png" type="Texture" id=1]
 [ext_resource path="res://tilesets/CaveTileSet.tres" type="TileSet" id=2]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/Button.tscn" type="PackedScene" id=4]
+[ext_resource path="res://sprites/background/bg1.png" type="Texture" id=5]
+[ext_resource path="res://scenes/VerticalLaser.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/WallButton.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/HorizontalLaser.tscn" type="PackedScene" id=8]
 
 [sub_resource type="ShaderMaterial" id=1]
 
-[sub_resource type="Environment" id=4]
+[sub_resource type="Environment" id=2]
 background_mode = 4
 ambient_light_color = Color( 0.294118, 0.254902, 1, 1 )
 ambient_light_energy = 2.92
 glow_enabled = true
 glow_blend_mode = 0
 
-[sub_resource type="CapsuleShape2D" id=2]
+[sub_resource type="CapsuleShape2D" id=3]
 radius = 20.6669
 height = 37.37
 
-[sub_resource type="CapsuleShape2D" id=3]
+[sub_resource type="CapsuleShape2D" id=4]
 
 [node name="Node2D" type="Node2D"]
 material = SubResource( 1 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 4 )
+environment = SubResource( 2 )
 
 [node name="Player" parent="." instance=ExtResource( 3 )]
 position = Vector2( 504, -664 )
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+current = true
+zoom = Vector2( 0.5, 0.5 )
 
 [node name="Platforms" type="TileMap" parent="." groups=[
 "paint_platforms",
@@ -67,22 +76,24 @@ format = 1
 tile_data = PoolIntArray( -3080156, 32, 2, -3080155, 32, 2, -3080154, 32, 2, -3080153, 32, 2, -3080152, 32, 2, -3014620, 32, 65538, -3014619, 32, 65538, -3014618, 32, 65538, -3014617, 32, 65538, -3014616, 32, 65538 )
 
 [node name="Node2D" type="Node2D" parent="."]
+visible = false
 
 [node name="Area2D" type="Area2D" parent="Node2D"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D"]
 position = Vector2( 545.333, -793.815 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )
 
 [node name="Area2D2" type="Area2D" parent="Node2D"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Node2D/Area2D2"]
 position = Vector2( 112, -288 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." groups=[
 "death_body",
 ]]
+visible = false
 position = Vector2( -400, 112 )
 
 [node name="Sprite" type="Sprite" parent="StaticBody2D"]
@@ -91,3 +102,32 @@ texture = ExtResource( 1 )
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="StaticBody2D"]
 polygon = PoolVector2Array( 544, -720, 528, -680, 560, -680 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2( 552, -712 )
+zoom = Vector2( 0.5, 0.5 )
+
+[node name="Button" parent="." instance=ExtResource( 4 )]
+position = Vector2( 440, -663.5 )
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_scale = Vector2( 0.2, 1 )
+
+[node name="Sprite" type="Sprite" parent="ParallaxBackground/ParallaxLayer"]
+position = Vector2( 280, -704 )
+texture = ExtResource( 5 )
+
+[node name="VerticalLaser" parent="." instance=ExtResource( 6 )]
+position = Vector2( 520, -768 )
+length = 112.0
+
+[node name="Button2" parent="." instance=ExtResource( 7 )]
+position = Vector2( 552, -696 )
+
+[node name="VerticalLaser2" parent="." instance=ExtResource( 8 )]
+position = Vector2( 672, -700 )
+length = 96.0
+
+[connection signal="StatusChanged" from="Button" to="VerticalLaser" method="toggleLaser"]

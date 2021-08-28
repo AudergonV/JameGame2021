@@ -10,14 +10,18 @@ public class Player : KinematicBody2D
     public float jumpForce = 1f;
     [Export]
     public float gravity = 1f;
+    [Export]
+    public Vector2 respawnPoint = Vector2.Zero;
 
     private bool onGravityCell = false;
     private bool sticky = false;
+    private bool running = false;
+    private bool facingLeft;
     private float actualSpeed, actualJumpForce;
-    private int maxSpeed = 300;
-    private int minSpeed = 100;
+    private int maxSpeed = 250;
+    private int minSpeed = 75;
     private float maxJumpForce = 500;
-    private int minJumpForce = 210;
+    private int minJumpForce = 170;
     private int gravityScale = 10;
     private float energy = 0f;
 
@@ -28,11 +32,16 @@ public class Player : KinematicBody2D
     private Laser weapon;
     private PackedScene JumpParticles;
     private TileMap platforms;
-
+    private AnimatedSprite animatedSprite;
+    private AudioStreamPlayer2D audio;
+    private PackedScene DeathParticles;
     public override void _Ready()
     {
         JumpParticles = ResourceLoader.Load<PackedScene>("res://scenes/JumpParticles.tscn");
+        DeathParticles = ResourceLoader.Load<PackedScene>("res://scenes/DeathParticles.tscn");
+        audio = GetNode<AudioStreamPlayer2D>("Audio");
         weapon = GetNode<Laser>("Weapon");
+        animatedSprite = GetNode<AnimatedSprite>("Sprite");
         platforms = GetParent().GetNode<TileMap>("Platforms");
         //Temp
         actualSpeed = minSpeed;
@@ -43,12 +52,16 @@ public class Player : KinematicBody2D
     {
         Vector2 mousePos = GetGlobalMousePosition();
         weapon.Rotation = Position.AngleToPoint(mousePos)-Mathf.Pi;
-
+        running = false;
         if (Input.IsActionPressed("left")){
             velocity.x = -actualSpeed;
-        }
+            facingLeft = true;
+            running = true;
+        } 
         if (Input.IsActionPressed("right")){
             velocity.x = actualSpeed;
+            facingLeft = false;
+            running = true;
         }
         if (Input.IsActionPressed("fire")){
             weapon.toggleCasting(true);
@@ -67,15 +80,16 @@ public class Player : KinematicBody2D
             else sticky = false;
         }
         if (!sticky) velocity.y = velocity.y + gravity*gravityScale;
-
-
+        animate();
         velocity = MoveAndSlide(velocity, floorDirection, false, 4, (float)Math.PI/4, false);
-        velocity.x = Lerp(velocity.x, 0, 0.3f);
         
         Surface surface = GetSurface(delta);
         if (IsOnFloor()){
             if (surface != Surface.Speed){
                 actualSpeed = Lerp(actualSpeed, speed*minSpeed, 0.2f);
+                velocity.x = Lerp(velocity.x, 0, 0.3f);
+            }else{
+                velocity.x = Lerp(velocity.x, 0, 0.05f);
             }
             if (surface != Surface.Jump) {
                 actualJumpForce = minJumpForce;
@@ -85,6 +99,7 @@ public class Player : KinematicBody2D
             }
             energy = 0;
         } else {
+            velocity.x = Lerp(velocity.x, 0, 0.3f);
             if (surface != Surface.Sticky){
                 sticky = false;
             }
@@ -140,16 +155,18 @@ public class Player : KinematicBody2D
     }
 
     private void jumpCell(float delta){
-        if (actualJumpForce == minJumpForce) { //Premier saut
+
+        if (energy == 0){
             if (actualSpeed >= minSpeed){ //On bouge
                 actualJumpForce = actualJumpForce + 50 * Math.Abs(velocity.x)/100;
             }else{ //on bouge pas ou presque pas
                 actualJumpForce = actualJumpForce + 50;
             }
-
-        } 
-        actualJumpForce = Lerp(actualJumpForce, maxJumpForce, energy/200);
-        GD.Print(actualJumpForce);
+        }else{
+             actualJumpForce = minJumpForce + energy*5;
+             if (actualJumpForce > maxJumpForce) actualJumpForce = maxJumpForce;
+            GD.Print(actualJumpForce);
+        }
         jump();
     }
 
@@ -174,6 +191,72 @@ public class Player : KinematicBody2D
     float Lerp(float firstFloat, float secondFloat, float by)
     {
         return firstFloat * (1 - by) + secondFloat * by;
+    }
+
+    private void animate(){
+        weapon.flip(facingLeft, gravity < 0);
+        animatedSprite.FlipH = facingLeft;
+        animatedSprite.FlipV = gravity < 0;
+        if (running){
+            animatedSprite.SpeedScale = Math.Abs(velocity.x)/150;
+        }else{
+            animatedSprite.SpeedScale = 1;
+        }
+        if (IsOnFloor()){
+            if (running) {
+                if (velocity.x > 0){
+                    animatedSprite.Play("Running");
+                } else {
+                    animatedSprite.Play("RunningLeft");
+                }
+            } else {
+                if (velocity.x >= 0){
+                    animatedSprite.Play("Idle");
+                } else {
+                    animatedSprite.Play("IdleLeft");
+                }
+            }
+        } else {
+            if (velocity.y*gravity > 0){
+                if (velocity.x > 0){
+                    animatedSprite.Play("Falling");
+                } else {
+                    animatedSprite.Play("FallingLeft");
+                }
+            }else{
+                if (velocity.x > 0){
+                    animatedSprite.Play("Jumping");
+                } else {
+                    animatedSprite.Play("JumpingLeft");
+                }
+            }
+        }
+    }
+
+    async public void die(){
+        Particles2D particles = (Particles2D)DeathParticles.Instance();
+        particles.GlobalPosition = Position; 
+        GetParent().AddChild(particles);
+        if (velocity.x >= 0){
+                animatedSprite.Play("Idle");
+            } else {
+                animatedSprite.Play("IdleLeft");
+        }
+        audio.Play();
+        SetPhysicsProcess(false);
+        weapon.flash();
+        ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 1);
+        await ToSignal(GetTree().CreateTimer(0.1f), "timeout");
+        ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 0);
+        await ToSignal(GetTree().CreateTimer(0.1f), "timeout");
+        ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 1);
+        await ToSignal(GetTree().CreateTimer(0.2f), "timeout");
+        ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 0);
+        await ToSignal(GetTree().CreateTimer(0.3f), "timeout");
+        Position = respawnPoint;
+        gravity = 1f;
+        velocity = Vector2.Zero;
+        SetPhysicsProcess(true);
     }
 
 

@@ -17,6 +17,21 @@ public class Laser : RayCast2D
 
     private Tween tween;
 
+    [Export]
+    public PackedScene Particles;
+    [Export]
+    public PackedScene SplatSound;
+    [Export]
+    public Material blueMaterial;
+    [Export]
+    public Material greenMaterial;
+    [Export]
+    public Material purpleMaterial;
+    [Export]
+    public Material redMaterial;
+
+    private Material[] materials;
+
     private bool isCasting;
     private int bulletType = 1;
 
@@ -24,10 +39,16 @@ public class Laser : RayCast2D
     public float laserWidth = 1.5f;
 
     private TileMap tmap_platforms;
+    private AudioStreamPlayer2D audio;
+
+    private bool hflipped = false;
+    private bool vflipped = false;
 
     public override void _Ready()
     {
         SetPhysicsProcess(false);
+        audio = GetNode<AudioStreamPlayer2D>("Audio");
+
         blueLaser = GetNode<Line2D>("BlueLaser");
         greenLaser = GetNode<Line2D>("GreenLaser");
         purpleLaser = GetNode<Line2D>("PurpleLaser");
@@ -45,8 +66,27 @@ public class Laser : RayCast2D
         purpleLaser.Points[1] = Vector2.Zero;
         redLaser.Points[1] = Vector2.Zero;
 
+        materials = new Material[4];
+        materials[0] = blueMaterial;
+        materials[1] = greenMaterial;
+        materials[2] = purpleMaterial;
+        materials[3] = redMaterial;
+
         tween = GetNode<Tween>("Tween");
         tmap_platforms = GetTree().GetRoot().GetNode<Node2D>("Node2D").GetNode<TileMap>("Platforms");
+    }
+
+    
+    public void flip(bool flip, bool gravity){
+        if (flip != hflipped){
+            hflipped = flip;
+            ZIndex = -ZIndex;
+        }
+        if (gravity != vflipped){
+            vflipped = gravity;
+            Position = new Vector2(Position.x, -Position.y);
+        }
+        
     }
 
     public void toggleCasting(bool casting){
@@ -57,6 +97,7 @@ public class Laser : RayCast2D
             }else{
                 disappear();
             }
+
         }
         SetPhysicsProcess(isCasting);
     }
@@ -68,21 +109,27 @@ public class Laser : RayCast2D
 
         if (IsColliding()){
             cast_point = ToLocal(GetCollisionPoint());
-            Vector2 pos = tmap_platforms.WorldToMap(GetCollisionPoint());
-            Vector2 nor = GetCollisionNormal();
-            Vector2 cellPos = nor.y < 0 ? pos : pos-nor;
-            int id = tmap_platforms.GetCellv(cellPos);
-           // GD.Print("HIT " + id + "   " + (cellPos) + "    " + GetCollisionPoint());
-            if (id >= 0 && id < 30 && (id-id%6)/6 != bulletType) { 
-                tmap_platforms.SetCellv(cellPos, bulletType*6+id%6);
-                /*Particles2D particles = (Particles2D)Particles.Instance();
-                if (direction.y < 0) particles.Rotation = (float)Math.PI;
-                particles.SetProcessMaterial(material);
-                particles.GlobalPosition = Position; 
-                GetParent().AddChild(particles);*/
+            if (GetCollider() is WallButton){
+                ((WallButton)GetCollider()).activate();
+            }else {
+                Vector2 pos = tmap_platforms.WorldToMap(GetCollisionPoint());
+                Vector2 nor = GetCollisionNormal();
+                Vector2 cellPos = nor.y < 0 ? pos : pos-nor;
+                int id = tmap_platforms.GetCellv(cellPos);
+                if (id >= 0 && id < 30 && (id-id%6)/6 != bulletType) { 
+                    tmap_platforms.SetCellv(cellPos, bulletType*6+id%6);
+                    #region particles
+                    Particles2D particles = (Particles2D)Particles.Instance();
+                    if (nor.y > 0) particles.Rotation = (float)Math.PI;
+                    particles.SetProcessMaterial(materials[bulletType-1]);
+                    particles.GlobalPosition = GetCollisionPoint(); 
+                    GetTree().GetRoot().AddChild(particles);
+                    AudioStreamPlayer2D audio = (AudioStreamPlayer2D) SplatSound.Instance();
+                    audio.GlobalPosition = GetCollisionPoint(); 
+                    GetTree().GetRoot().AddChild(audio);
+                    #endregion
+                }
             }
-            //  }
-            
         }
         blueLaser.SetPointPosition(1, cast_point);
         greenLaser.SetPointPosition(1, cast_point);
@@ -97,7 +144,9 @@ public class Laser : RayCast2D
         tween.InterpolateProperty(greenLaser, "width", 0, laserWidth, 0.2f);
         tween.InterpolateProperty(purpleLaser, "width", 0, laserWidth, 0.2f);
         tween.InterpolateProperty(redLaser, "width", 0, laserWidth, 0.2f);
+        tween.InterpolateProperty(audio, "volume_db", 0, 1, 0.2f);
         tween.Start();
+        audio.Play();
     }
 
     private void disappear(){
@@ -106,7 +155,9 @@ public class Laser : RayCast2D
         tween.InterpolateProperty(greenLaser, "width", laserWidth, 0, 0.2f);
         tween.InterpolateProperty(purpleLaser, "width", laserWidth, 0, 0.2f);
         tween.InterpolateProperty(redLaser, "width", laserWidth, 0, 0.2f);
+        tween.InterpolateProperty(audio, "volume_db", 1, 0, 0.2f);
         tween.Start();
+        audio.Stop();
     }
 
     public void changeWeapon(){
@@ -134,5 +185,28 @@ public class Laser : RayCast2D
         }
         currentLaser.Show();
         currentArm.Show();
+    }
+
+    async public void flash(){
+        ((ShaderMaterial)blueArm.Material).SetShaderParam("hit_strength", 1);
+        ((ShaderMaterial)greenArm.Material).SetShaderParam("hit_strength", 1);
+        ((ShaderMaterial)purpleArm.Material).SetShaderParam("hit_strength", 1);
+        ((ShaderMaterial)redArm.Material).SetShaderParam("hit_strength", 1);
+        await ToSignal(GetTree().CreateTimer(0.1f), "timeout");
+        ((ShaderMaterial)blueArm.Material).SetShaderParam("hit_strength", 0);
+        ((ShaderMaterial)greenArm.Material).SetShaderParam("hit_strength", 0);
+        ((ShaderMaterial)purpleArm.Material).SetShaderParam("hit_strength", 0);
+        ((ShaderMaterial)redArm.Material).SetShaderParam("hit_strength", 0);
+        await ToSignal(GetTree().CreateTimer(0.1f), "timeout");
+        ((ShaderMaterial)blueArm.Material).SetShaderParam("hit_strength", 1);
+        ((ShaderMaterial)greenArm.Material).SetShaderParam("hit_strength", 1);
+        ((ShaderMaterial)purpleArm.Material).SetShaderParam("hit_strength", 1);
+        ((ShaderMaterial)redArm.Material).SetShaderParam("hit_strength", 1);
+        await ToSignal(GetTree().CreateTimer(0.2f), "timeout");
+        ((ShaderMaterial)blueArm.Material).SetShaderParam("hit_strength", 0);
+        ((ShaderMaterial)greenArm.Material).SetShaderParam("hit_strength", 0);
+        ((ShaderMaterial)purpleArm.Material).SetShaderParam("hit_strength", 0);
+        ((ShaderMaterial)redArm.Material).SetShaderParam("hit_strength", 0);
+        await ToSignal(GetTree().CreateTimer(0.3f), "timeout");
     }
 }

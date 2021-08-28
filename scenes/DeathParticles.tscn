@@ -1,0 +1,56 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="ParticlesMaterial" id=1]
+emission_shape = 1
+emission_sphere_radius = 5.31
+flag_disable_z = true
+direction = Vector3( 1, -10, 0 )
+gravity = Vector3( 0, 98, 0 )
+initial_velocity = 67.42
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 1.5
+color = Color( 1, 0.262745, 0.0901961, 1 )
+hue_variation = 0.04
+hue_variation_random = 0.53
+
+[sub_resource type="Animation" id=2]
+resource_name = "default"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 1 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "queue_free"
+} ]
+}
+
+[node name="Particles2D" type="Particles2D"]
+emitting = false
+amount = 10
+one_shot = true
+speed_scale = 2.33
+explosiveness = 1.0
+process_material = SubResource( 1 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "default"
+anims/default = SubResource( 2 )

@@ -26,6 +26,7 @@ public class Weapon : Sprite
         else bulletType++;
     }
 
+
     public void shoot(){
         
         if (timer.IsStopped()){
