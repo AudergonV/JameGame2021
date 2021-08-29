@@ -6,16 +6,20 @@ public class SceneLoader : Node2D
 	
 	public override void _Ready()
 	{
-		loadLevel(1);
 	}
 
-	public void loadLevel(int id){
+
+	public void loadLevel(string id){
+		clear();
+		AddChild(ResourceLoader.Load<PackedScene>("res://scenes/levels/Level"+id+".tscn").Instance());
+	}
+
+	public void clear(){
 		foreach (Node child in GetChildren())
 		{
 			RemoveChild(child);
 			child.QueueFree();
 		}
-		AddChild(ResourceLoader.Load<PackedScene>("res://scenes/levels/Level"+id+".tscn").Instance());
 	}
 
 

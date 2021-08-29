@@ -15,17 +15,20 @@ public class Button : Node2D
     public delegate void StatusChanged(bool status);
     [Export]
     public float time;
+    private AudioStreamPlayer2D audio;
 
     public override void _Ready()
     {
         sprite = GetNode<Sprite>("Sprite");
         timer = GetNode<Timer>("Timer");
         tween = GetNode<Tween>("Tween");
+        audio = GetNode<AudioStreamPlayer2D>("Audio");
         sprite.Modulate = off;
     }
 
     public void OnBodyEntered(PhysicsBody2D body){
         if (body.IsInGroup("player")){
+            if (!status) audio.Play();
             status = true;
             EmitSignal("StatusChanged", status);
             sprite.Modulate = on;

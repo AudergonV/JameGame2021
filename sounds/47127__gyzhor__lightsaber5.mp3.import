@@ -1,0 +1,15 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+path="res://.import/47127__gyzhor__lightsaber5.mp3-68b9cab31f66d7d2f31a3be67bec97dc.mp3str"
+
+[deps]
+
+source_file="res://sounds/47127__gyzhor__lightsaber5.mp3"
+dest_files=[ "res://.import/47127__gyzhor__lightsaber5.mp3-68b9cab31f66d7d2f31a3be67bec97dc.mp3str" ]
+
+[params]
+
+loop=true
+loop_offset=0

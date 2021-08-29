@@ -13,7 +13,8 @@ public class OutOfZone : Area2D
 
     public void OnBodyEntered(Node2D body){
         if (body.IsInGroup("player")){
-            body.SetPosition(respawnPoint);
+            body.Position = respawnPoint;
+            ((Player) body).takeDamage(30);
         }
     }
 

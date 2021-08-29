@@ -13,7 +13,7 @@ public class TextBox : ColorRect
         animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
     }
 
-    async public void showText(string text, float time = 3f){
+    async public void showText(string text, float time = 5f){
         Show();
         label.Text = text;
         animationPlayer.Play("show");

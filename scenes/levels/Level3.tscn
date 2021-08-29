@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://tilesets/CaveTileSet.tres" type="TileSet" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://scenes/Teleporter.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/Spike.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/Stand.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/Slime.tscn" type="PackedScene" id=10]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -109,7 +110,7 @@ respawnPoint = Vector2( 72, 48 )
 
 [node name="Teleporter" parent="." instance=ExtResource( 7 )]
 position = Vector2( 2504, 96 )
-teleportTo = 4
+teleportTo = "4"
 
 [node name="Spike" parent="." instance=ExtResource( 8 )]
 position = Vector2( 1904, -88 )
@@ -144,9 +145,15 @@ position = Vector2( 2152, -88 )
 [node name="Spike11" parent="." instance=ExtResource( 8 )]
 position = Vector2( 2168, -88 )
 
+[node name="Spike12" parent="." instance=ExtResource( 8 )]
+position = Vector2( 2184, 8 )
+
 [node name="Stand" parent="." instance=ExtResource( 9 )]
 position = Vector2( 136, 48 )
 color = 3
+
+[node name="Slime" parent="." instance=ExtResource( 10 )]
+position = Vector2( 1800, -64 )
 
 [connection signal="StatusChanged" from="Button" to="HorizontalLaser" method="toggleLaser"]
 [connection signal="StatusChanged" from="Button2" to="HorizontalLaser2" method="toggleLaser"]

@@ -41,7 +41,7 @@ public class Bullet : KinematicBody2D
                             tmap.SetCellv(pos-collision.Normal, bulletType*6+id%6);
                             Particles2D particles = (Particles2D)Particles.Instance();
                             if (direction.y < 0) particles.Rotation = (float)Math.PI;
-                            particles.SetProcessMaterial(material);
+                            particles.ProcessMaterial = material;
                             particles.GlobalPosition = Position; 
                             GetParent().AddChild(particles);
                         }

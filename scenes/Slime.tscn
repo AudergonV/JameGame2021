@@ -1,0 +1,249 @@
+[gd_scene load_steps=36 format=2]
+
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime1.png" type="Texture" id=1]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime2.png" type="Texture" id=2]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime3.png" type="Texture" id=3]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime4.png" type="Texture" id=4]
+[ext_resource path="res://scripts/Slime.cs" type="Script" id=5]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime8.png" type="Texture" id=6]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime9.png" type="Texture" id=7]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalking2.png" type="Texture" id=8]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime6.png" type="Texture" id=9]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime7.png" type="Texture" id=10]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlime5.png" type="Texture" id=11]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalking1.png" type="Texture" id=12]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalking3.png" type="Texture" id=13]
+[ext_resource path="res://sprites/UI/LifeBarProgress.png" type="Texture" id=14]
+[ext_resource path="res://sprites/UI/LifeBarUnder.png" type="Texture" id=15]
+[ext_resource path="res://shaders/FlashSlime.tres" type="Material" id=16]
+[ext_resource path="res://sounds/splat.wav" type="AudioStream" id=17]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes3.png" type="Texture" id=18]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes2.png" type="Texture" id=19]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes7.png" type="Texture" id=20]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes6.png" type="Texture" id=21]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes8.png" type="Texture" id=22]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes4.png" type="Texture" id=23]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalkingRedEyes3.png" type="Texture" id=24]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes9.png" type="Texture" id=25]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalkingRedEyes2.png" type="Texture" id=26]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes1.png" type="Texture" id=27]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes5.png" type="Texture" id=28]
+[ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalkingRedEyes1.png" type="Texture" id=29]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 4.0
+
+[sub_resource type="SpriteFrames" id=2]
+animations = [ {
+"frames": [ ExtResource( 9 ), ExtResource( 10 ), ExtResource( 6 ), ExtResource( 7 ) ],
+"loop": true,
+"name": "falling",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 12 ), ExtResource( 8 ), ExtResource( 13 ) ],
+"loop": true,
+"name": "moving",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 4 ), ExtResource( 11 ) ],
+"loop": true,
+"name": "jumping",
+"speed": 10.0
+}, {
+"frames": [ ExtResource( 23 ), ExtResource( 28 ) ],
+"loop": true,
+"name": "jumping_triggered",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 21 ), ExtResource( 20 ), ExtResource( 22 ), ExtResource( 25 ) ],
+"loop": true,
+"name": "falling_triggered",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 29 ), ExtResource( 26 ), ExtResource( 24 ) ],
+"loop": true,
+"name": "moving_triggered",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 27 ), ExtResource( 19 ), ExtResource( 18 ) ],
+"loop": true,
+"name": "prejump_triggered",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 1 ), ExtResource( 2 ), ExtResource( 3 ) ],
+"loop": false,
+"name": "prejump",
+"speed": 5.0
+} ]
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 4.875
+
+[sub_resource type="ParticlesMaterial" id=4]
+emission_shape = 1
+emission_sphere_radius = 4.57
+flag_disable_z = true
+direction = Vector3( 1, -10, 0 )
+gravity = Vector3( 0, 98, 0 )
+initial_velocity = 40.0
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 2.0
+scale_random = 1.0
+color = Color( 0.0666667, 1, 0.682353, 0.470588 )
+hue_variation = 0.09
+hue_variation_random = 1.0
+
+[sub_resource type="Animation" id=5]
+resource_name = "death"
+tracks/0/type = "value"
+tracks/0/path = NodePath("SlimeDeathParticles:emitting")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 1 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "queue_free"
+} ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("Sprite:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("LifeBar:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("CollisionShape2D:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("DeathArea/CollisionShape2D:disabled")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+
+[sub_resource type="CircleShape2D" id=6]
+radius = 70.6193
+
+[node name="Slime" type="KinematicBody2D"]
+position = Vector2( 264, -48 )
+script = ExtResource( 5 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( 0, 4 )
+shape = SubResource( 1 )
+
+[node name="Sprite" type="AnimatedSprite" parent="."]
+modulate = Color( 1.4, 1, 1, 1 )
+material = ExtResource( 16 )
+position = Vector2( 0, -8 )
+frames = SubResource( 2 )
+animation = "moving_triggered"
+playing = true
+
+[node name="WallCast" type="RayCast2D" parent="."]
+cast_to = Vector2( -40, 0 )
+
+[node name="JumpCast" type="RayCast2D" parent="."]
+cast_to = Vector2( -50, -30 )
+
+[node name="FloorCast" type="RayCast2D" parent="."]
+position = Vector2( -8, 0 )
+cast_to = Vector2( -32, 32 )
+
+[node name="DeathArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea"]
+position = Vector2( 0, 3.875 )
+shape = SubResource( 3 )
+
+[node name="LifeBar" type="TextureProgress" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -8.33774
+margin_top = -4.85353
+margin_right = 7.66226
+margin_bottom = -2.85353
+max_value = 400.0
+value = 400.0
+texture_under = ExtResource( 15 )
+texture_progress = ExtResource( 14 )
+tint_progress = Color( 0, 1, 0.623529, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SlimeDeathParticles" type="Particles2D" parent="."]
+emitting = false
+amount = 25
+one_shot = true
+speed_scale = 2.15
+explosiveness = 1.0
+process_material = SubResource( 4 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/death = SubResource( 5 )
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 17 )
+
+[node name="TriggerArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TriggerArea"]
+position = Vector2( -9.79974, 4.57851 )
+shape = SubResource( 6 )
+
+[connection signal="animation_finished" from="Sprite" to="." method="OnAnimationFinished"]
+[connection signal="body_entered" from="DeathArea" to="." method="OnBodyEntered"]
+[connection signal="body_exited" from="DeathArea" to="." method="OnDeathAreaBodyExited"]
+[connection signal="body_entered" from="TriggerArea" to="." method="OnTriggerBodyEntered"]
+[connection signal="body_exited" from="TriggerArea" to="." method="OnTriggerBodyExited"]

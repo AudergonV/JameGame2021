@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://sprites/obj/Button.png" type="Texture" id=1]
 [ext_resource path="res://scripts/Button.cs" type="Script" id=2]
+[ext_resource path="res://sounds/220166__gameaudio__button-confirm-spacey(1).wav" type="AudioStream" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 5.84934, 0.912071 )
@@ -21,6 +22,10 @@ shape = SubResource( 1 )
 [node name="Timer" type="Timer" parent="."]
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 3 )
+bus = "SFX"
 
 [connection signal="body_entered" from="Area2D" to="." method="OnBodyEntered"]
 [connection signal="body_exited" from="Area2D" to="." method="OnBodyExited"]

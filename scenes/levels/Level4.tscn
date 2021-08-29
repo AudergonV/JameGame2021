@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://tilesets/CaveTileSet.tres" type="TileSet" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://scenes/OutOfZone.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/Spike.tscn" type="PackedScene" id=8]
 [ext_resource path="res://scenes/Stand.tscn" type="PackedScene" id=9]
+[ext_resource path="res://scenes/Teleporter.tscn" type="PackedScene" id=10]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -206,6 +207,10 @@ position = Vector2( 416, -40 )
 position = Vector2( 48, 48 )
 color = 2
 
+[node name="Teleporter" parent="." instance=ExtResource( 10 )]
+position = Vector2( 816, -144 )
+teleportTo = "End"
+
 [connection signal="StatusChanged" from="Button" to="HorizontalLaser" method="toggleLaser"]
-[connection signal="StatusChanged" from="Button2" to="VerticalLaser2" method="toggleLaser"]
 [connection signal="StatusChanged" from="Button2" to="VerticalLaser" method="toggleLaser"]
+[connection signal="StatusChanged" from="Button2" to="VerticalLaser2" method="toggleLaser"]

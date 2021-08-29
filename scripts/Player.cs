@@ -16,14 +16,15 @@ public class Player : KinematicBody2D
     private bool onGravityCell = false;
     private bool sticky = false;
     private bool running = false;
+    private bool invincibility = false;
     private bool facingLeft;
     private float actualSpeed, actualJumpForce;
     private int maxSpeed = 250;
     private int minSpeed = 75;
     private float maxJumpForce = 500;
     private int minJumpForce = 170;
-    private int gravityScale = 10;
     private float energy = 0f;
+    private int life = 100;
 
     private Vector2 velocity = new Vector2(0,0);
     private Vector2 floorDirection = new Vector2(0,-1);
@@ -31,20 +32,30 @@ public class Player : KinematicBody2D
     //private Weapon weapon;
     public Laser weapon;
     private PackedScene JumpParticles;
+    private PackedScene BounceSound;
+    private PackedScene SplatSound;
     private TileMap platforms;
     private AnimatedSprite animatedSprite;
     private AudioStreamPlayer2D audio;
+    private AudioStreamPlayer2D gravityAudio;
     private PackedScene DeathParticles;
+    private Timer invincibilityTimer;
+    private Global global;
 
     [Export]
     public Texture pointer;
     public override void _Ready()
     {
+        global = GetNode<Global>("/root/Global");
         JumpParticles = ResourceLoader.Load<PackedScene>("res://scenes/JumpParticles.tscn");
         DeathParticles = ResourceLoader.Load<PackedScene>("res://scenes/DeathParticles.tscn");
+        BounceSound = ResourceLoader.Load<PackedScene>("res://scenes/BounceSound.tscn");
+        SplatSound = ResourceLoader.Load<PackedScene>("res://scenes/SplatSound.tscn");
         audio = GetNode<AudioStreamPlayer2D>("Audio");
+        gravityAudio = GetNode<AudioStreamPlayer2D>("Gravity");
         weapon = GetNode<Laser>("Weapon");
         animatedSprite = GetNode<AnimatedSprite>("Sprite");
+        invincibilityTimer = GetNode<Timer>("InvincibilityTimer");
         platforms = GetParent().GetNode<TileMap>("Platforms");
         //Temp
         actualSpeed = minSpeed;
@@ -83,10 +94,10 @@ public class Player : KinematicBody2D
             if (gravity > 0) jump();
             else sticky = false;
         }
-        if (!sticky) velocity.y = velocity.y + gravity*gravityScale;
+        if (!sticky) velocity.y = velocity.y + gravity*global.gravityScale;
         animate();
         velocity = MoveAndSlide(velocity, floorDirection, false, 4, (float)Math.PI/4, false);
-        
+        velocity.x = Lerp(velocity.x, 0, 0.1f);
         Surface surface = GetSurface(delta);
         if (IsOnFloor()){
             if (surface != Surface.Speed){
@@ -147,7 +158,13 @@ public class Player : KinematicBody2D
     }
 
     private void stickyCell(){
+        if (!sticky) {
+            AudioStreamPlayer2D audio = (AudioStreamPlayer2D) SplatSound.Instance();
+            audio.GlobalPosition = GlobalPosition; 
+            GetTree().Root.AddChild(audio);
+        }
         sticky = true;
+        
     }
 
     private void speedCell(){
@@ -169,8 +186,10 @@ public class Player : KinematicBody2D
         }else{
              actualJumpForce = minJumpForce + energy*5;
              if (actualJumpForce > maxJumpForce) actualJumpForce = maxJumpForce;
-            GD.Print(actualJumpForce);
         }
+        AudioStreamPlayer2D audio = (AudioStreamPlayer2D)BounceSound.Instance();
+        audio.GlobalPosition = GlobalPosition;
+        GetTree().Root.AddChild(audio);
         jump();
     }
 
@@ -188,6 +207,7 @@ public class Player : KinematicBody2D
                 gravity = -gravity;
                 floorDirection = -floorDirection;   
                 onGravityCell = false;
+                gravityAudio.Play();
             }
         }
     }
@@ -237,6 +257,31 @@ public class Player : KinematicBody2D
         }
     }
 
+    public void takeDamage(int damage){
+        if (!invincibility){
+            audio.Play();
+            invincibility = true;
+            invincibilityTimer.Start();
+            updateLife(-damage);
+            if (life <= 0){
+                die();
+            }else{
+                flash(0.1f);
+                weapon.flash();
+            }
+        }
+    }
+
+    public void OnInvincibilityTimerTimeout(){
+        invincibility = false;
+    }
+
+    async void flash(float duration){
+        ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 1);
+        await ToSignal(GetTree().CreateTimer(duration), "timeout");
+        ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 0);
+    }
+
     async public void die(){
         Particles2D particles = (Particles2D)DeathParticles.Instance();
         particles.GlobalPosition = Position; 
@@ -246,7 +291,6 @@ public class Player : KinematicBody2D
             } else {
                 animatedSprite.Play("IdleLeft");
         }
-        audio.Play();
         SetPhysicsProcess(false);
         weapon.flash();
         ((ShaderMaterial)animatedSprite.Material).SetShaderParam("hit_strength", 1);
@@ -260,7 +304,18 @@ public class Player : KinematicBody2D
         Position = respawnPoint;
         gravity = 1f;
         velocity = Vector2.Zero;
+        sticky = false;
+        onGravityCell = false;
+        running = false;
+        floorDirection = Vector2.Up;
+        life = 100;
+        updateLife();
         SetPhysicsProcess(true);
+    }
+
+    private void updateLife(int offset = 0){
+        life += offset;
+        global.ui.setLife(life);
     }
 
 

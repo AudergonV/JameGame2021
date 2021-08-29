@@ -83,3 +83,4 @@ texture = ExtResource( 8 )
 
 [node name="Audio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 15 )
+bus = "Weapon"

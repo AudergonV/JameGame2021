@@ -122,6 +122,8 @@ public class Laser : RayCast2D
             cast_point = ToLocal(GetCollisionPoint());
             if (GetCollider() is WallButton){
                 ((WallButton)GetCollider()).activate();
+            }else if (GetCollider() is Slime){
+                ((Slime)GetCollider()).LoseLife(10);
             }else {
                 Vector2 pos = tmap_platforms.WorldToMap(GetCollisionPoint());
                 Vector2 nor = GetCollisionNormal();
@@ -154,19 +156,20 @@ public class Laser : RayCast2D
         tween.InterpolateProperty(greenLaser, "width", 0, laserWidth, 0.2f);
         tween.InterpolateProperty(purpleLaser, "width", 0, laserWidth, 0.2f);
         tween.InterpolateProperty(redLaser, "width", 0, laserWidth, 0.2f);
-        tween.InterpolateProperty(audio, "volume_db", 0, 1, 0.2f);
+        tween.InterpolateProperty(audio, "volume_db", -40, 1, 0.2f);
         tween.Start();
         audio.Play();
     }
 
-    private void disappear(){
+    async private void disappear(){
         tween.StopAll();
         tween.InterpolateProperty(blueLaser, "width", laserWidth, 0, 0.2f);
         tween.InterpolateProperty(greenLaser, "width", laserWidth, 0, 0.2f);
         tween.InterpolateProperty(purpleLaser, "width", laserWidth, 0, 0.2f);
         tween.InterpolateProperty(redLaser, "width", laserWidth, 0, 0.2f);
-        tween.InterpolateProperty(audio, "volume_db", 1, 0, 0.2f);
+        tween.InterpolateProperty(audio, "volume_db", 1, -40, 0.2f);
         tween.Start();
+        await ToSignal(tween, "tween_all_completed");
         audio.Stop();
     }
 
