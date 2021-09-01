@@ -26,7 +26,6 @@ public class Pause : Control
     }
 
     public void OnExitButtonPressed(){
-        global.sceneLoader.clear();
-        global.menu.loadMenu("TitleScreen");
+        global.restart();
     }
 }

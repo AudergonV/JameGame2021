@@ -100,7 +100,6 @@ material = ExtResource( 38 )
 position = Vector2( -0.530945, -0.969666 )
 frames = SubResource( 1 )
 animation = "IdleLeft"
-frame = 1
 playing = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=37 format=2]
 
 [ext_resource path="res://sprites/mobs/slimes/green/GreenSlime1.png" type="Texture" id=1]
 [ext_resource path="res://sprites/mobs/slimes/green/GreenSlime2.png" type="Texture" id=2]
@@ -15,7 +15,6 @@
 [ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeWalking3.png" type="Texture" id=13]
 [ext_resource path="res://sprites/UI/LifeBarProgress.png" type="Texture" id=14]
 [ext_resource path="res://sprites/UI/LifeBarUnder.png" type="Texture" id=15]
-[ext_resource path="res://shaders/FlashSlime.tres" type="Material" id=16]
 [ext_resource path="res://sounds/splat.wav" type="AudioStream" id=17]
 [ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes3.png" type="Texture" id=18]
 [ext_resource path="res://sprites/mobs/slimes/green/GreenSlimeRedEyes2.png" type="Texture" id=19]
@@ -32,6 +31,23 @@
 
 [sub_resource type="CircleShape2D" id=1]
 radius = 4.0
+
+[sub_resource type="Shader" id=7]
+code = "shader_type canvas_item;
+
+uniform vec4 hit_color : hint_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform float hit_strength : hint_range(0.0,1.0) = 0.0;
+
+void fragment() {
+	vec4 custom_color = texture(TEXTURE, UV);
+	custom_color.rgb = mix(custom_color.rgb, hit_color.rgb, hit_strength);
+	COLOR = custom_color;
+}"
+
+[sub_resource type="ShaderMaterial" id=8]
+shader = SubResource( 7 )
+shader_param/hit_color = Color( 1, 1, 1, 1 )
+shader_param/hit_strength = 0.0
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
@@ -94,7 +110,7 @@ color = Color( 0.0666667, 1, 0.682353, 0.470588 )
 hue_variation = 0.09
 hue_variation_random = 1.0
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=9]
 resource_name = "death"
 tracks/0/type = "value"
 tracks/0/path = NodePath("SlimeDeathParticles:emitting")
@@ -184,7 +200,7 @@ shape = SubResource( 1 )
 
 [node name="Sprite" type="AnimatedSprite" parent="."]
 modulate = Color( 1.4, 1, 1, 1 )
-material = ExtResource( 16 )
+material = SubResource( 8 )
 position = Vector2( 0, -8 )
 frames = SubResource( 2 )
 animation = "moving_triggered"
@@ -231,7 +247,7 @@ explosiveness = 1.0
 process_material = SubResource( 4 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-anims/death = SubResource( 5 )
+anims/death = SubResource( 9 )
 
 [node name="Audio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 17 )

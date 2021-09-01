@@ -19,7 +19,7 @@ public class TitleScreen : Control
     }
 
     public void OnSettingsButtonPressed(){
-        global.menu.loadMenu("settings");
+        global.menu.loadMenu("Settings");
     }
 
     public void OnCreditsButtonPressed(){

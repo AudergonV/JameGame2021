@@ -23,7 +23,7 @@ environment = SubResource( 1 )
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( -304, -72 )
 current = true
-zoom = Vector2( 0.6, 0.6 )
+zoom = Vector2( 0.49, 0.49 )
 drag_margin_h_enabled = true
 smoothing_speed = 2.0
 drag_margin_left = 0.1
