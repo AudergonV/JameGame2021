@@ -1,0 +1,76 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://tilesets/CaveTileSet.tres" type="TileSet" id=1]
+[ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/ParallaxBackground.tscn" type="PackedScene" id=6]
+[ext_resource path="res://scenes/OutOfZone.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/Teleporter.tscn" type="PackedScene" id=10]
+
+[sub_resource type="Environment" id=1]
+background_mode = 4
+ambient_light_color = Color( 0.294118, 0.254902, 1, 1 )
+ambient_light_energy = 2.92
+fog_color = Color( 0.372549, 0.533333, 0.835294, 1 )
+fog_sun_color = Color( 0.270588, 0.509804, 0.917647, 1 )
+fog_sun_amount = 0.16
+glow_enabled = true
+glow_blend_mode = 0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( -24, 48 )
+respawnPoint = Vector2( -24, 48 )
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position = Vector2( 72, -34 )
+current = true
+zoom = Vector2( 0.49, 0.49 )
+limit_top = -250
+limit_bottom = 100
+drag_margin_h_enabled = true
+smoothing_speed = 2.0
+drag_margin_left = 0.1
+drag_margin_right = 0.1
+drag_margin_bottom = 0.0
+editor_draw_limits = true
+
+[node name="Platforms" type="TileMap" parent="." groups=[
+"paint_platforms",
+]]
+z_index = 2
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 16, 16 )
+collision_layer = 7
+collision_mask = 7
+format = 1
+tile_data = PoolIntArray( -786323, 1, 0, -786322, 1, 0, -786321, 1, 0, -786320, 1, 0, -786319, 1, 0, -786318, 1, 0, -786317, 1, 0, -786316, 1, 0, -786315, 1, 0, -786314, 1, 0, -786313, 1, 0, -786312, 1, 0, -786311, 1, 0, -786310, 1, 0, -786309, 1, 0, -786308, 1, 0, -786307, 1, 0, -786306, 1, 0, -786305, 1, 0, -786304, 1, 0, -786303, 1, 0, -786302, 1, 0, -786301, 1, 0, -786300, 1, 0, -786299, 1, 0, -786298, 1, 0, -786297, 1, 0, -524256, 25, 0, -524255, 25, 0, -524254, 25, 0, -524253, 25, 0, -524252, 25, 0, -524251, 25, 0, -524250, 25, 0, -524249, 25, 0, -524248, 25, 0, -524247, 25, 0, -524246, 25, 0, -524245, 25, 0, -524244, 25, 0, -524243, 25, 0, -524242, 25, 0, -524241, 25, 0, -524240, 25, 0, -524239, 25, 0, -524238, 25, 0, -524237, 25, 0, -393107, 22, 0, -393106, 22, 0, -393105, 22, 0, -393104, 22, 0, -393103, 22, 0, -393102, 22, 0, -393101, 22, 0, -393100, 22, 0, -393099, 22, 0, -393098, 22, 0, -393097, 22, 0, -393096, 22, 0, -393095, 22, 0, -393094, 22, 0, -393093, 22, 0, -393092, 22, 0, -393091, 22, 0, 18, 10, 0, 19, 10, 0, 20, 10, 0, 21, 10, 0, 22, 10, 0, 23, 10, 0, 24, 10, 0, 25, 10, 0, 26, 10, 0, 27, 10, 0, 28, 10, 0, 29, 10, 0, 30, 16, 0, 327677, 10, 0, 327678, 10, 0, 327679, 10, 0, 262144, 10, 0, 262145, 10, 0, 262146, 10, 0, 262147, 10, 0, 262148, 10, 0, 262149, 10, 0, 262150, 17, 0, 262210, 16, 0, 262211, 16, 0, 262240, 16, 0, 262241, 16, 0 )
+
+[node name="BackLandscape" type="TileMap" parent="."]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 16, 16 )
+collision_layer = 5
+collision_mask = 5
+format = 1
+
+[node name="Landscape" type="TileMap" parent="."]
+z_index = 1
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 16, 16 )
+collision_layer = 5
+collision_mask = 5
+format = 1
+
+[node name="ParallaxBackground" parent="." instance=ExtResource( 6 )]
+
+[node name="OutOfZone" parent="." instance=ExtResource( 7 )]
+respawnPoint = Vector2( -24, 48 )
+
+[node name="Spikes" type="Node2D" parent="."]
+
+[node name="Teleporter" parent="." instance=ExtResource( 10 )]
+position = Vector2( 816, -144 )
+teleportTo = "End"

@@ -174,37 +174,39 @@ public class Laser : RayCast2D
     }
 
     public void changeWeapon(int id = -1){
-        if (id < 1){
-            do{
-                bulletType++; 
-                if (bulletType > 4) bulletType = 1;
-            }while(!global.isWeaponEnabled(bulletType));
-        } else {
-            if (global.isWeaponEnabled(id)) bulletType = id;
+        if (global.isWeaponUnlocked()){
+            if (id < 1){
+                do{
+                    bulletType++; 
+                    if (bulletType > 4) bulletType = 1;
+                }while(!global.isWeaponEnabled(bulletType));
+            } else {
+                if (global.isWeaponEnabled(id)) bulletType = id;
+            }
+            global.ui.setWeapon(bulletType);
+            currentLaser.Hide();
+            currentArm.Hide();
+            switch (bulletType){
+                case 2:
+                    currentLaser = greenLaser;
+                    currentArm = greenArm;
+                break;
+                case 3:
+                    currentLaser = purpleLaser;
+                    currentArm = purpleArm;
+                break;
+                case 4:
+                    currentLaser = redLaser;
+                    currentArm = redArm;
+                break;
+                default:
+                    currentLaser = blueLaser;
+                    currentArm = blueArm;
+                break;
+            }
+            currentLaser.Show();
+            currentArm.Show();
         }
-        global.ui.setWeapon(bulletType);
-        currentLaser.Hide();
-        currentArm.Hide();
-        switch (bulletType){
-            case 2:
-                currentLaser = greenLaser;
-                currentArm = greenArm;
-            break;
-            case 3:
-                currentLaser = purpleLaser;
-                currentArm = purpleArm;
-            break;
-            case 4:
-                currentLaser = redLaser;
-                currentArm = redArm;
-            break;
-            default:
-                currentLaser = blueLaser;
-                currentArm = blueArm;
-            break;
-        }
-        currentLaser.Show();
-        currentArm.Show();
     }
 
     async public void flash(){

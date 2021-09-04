@@ -4,7 +4,7 @@ using System;
 public class Global : Node
 {
 	private bool[] weapons = {false,false,false,false};
-	private bool weaponUnlocked;
+	private bool weaponUnlocked = false;
 	public Menu menu;
 	public UI ui;
 	public SceneLoader sceneLoader;
